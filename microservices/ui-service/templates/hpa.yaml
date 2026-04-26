@@ -1,0 +1,29 @@
+{{- if .Values.uiService.hpa.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: ui-service-hpa
+  namespace: {{ .Values.uiService.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ui-service
+  minReplicas: {{ .Values.uiService.hpa.minReplicas }}
+  maxReplicas: {{ .Values.uiService.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.uiService.hpa.targetCPUUtilization }}
+{{- if .Values.uiService.hpa.targetMemoryUtilization }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.uiService.hpa.targetMemoryUtilization }}
+{{- end }}
+{{- end }}

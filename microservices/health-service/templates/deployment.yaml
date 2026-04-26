@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: health-service
+  namespace: {{ .Values.healthService.namespace }}
+  labels:
+    app: health-service
+spec:
+  replicas: {{ .Values.healthService.replicas }}
+  selector:
+    matchLabels:
+      app: health-service
+  template:
+    metadata:
+      labels:
+        app: health-service
+    spec:
+      containers:
+        - name: health-service
+          image: "{{ .Values.healthService.image.repository }}:{{ .Values.healthService.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.healthService.port }}
+          env:
+            - name: DB_HOST
+              value: {{ .Values.healthService.env.dbHost }}
+            - name: DB_PORT
+              value: {{ .Values.healthService.env.dbPort }}
+            - name: DB_USER
+              value: {{ .Values.healthService.env.dbUser }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.healthService.secrets.dbPasswordSecret }}
+                  key: {{ .Values.healthService.secrets.dbPasswordKey }}
+            - name: DB_NAME
+              value: {{ .Values.healthService.env.dbName }}
+            - name: PORT
+              value: {{ .Values.healthService.env.port }}
+          resources:
+            requests:
+              cpu: {{ .Values.healthService.resources.requests.cpu }}
+              memory: {{ .Values.healthService.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.healthService.resources.limits.cpu }}
+              memory: {{ .Values.healthService.resources.limits.memory }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.healthService.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.healthService.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3

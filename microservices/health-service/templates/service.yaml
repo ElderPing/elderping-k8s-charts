@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: health-service
+  namespace: {{ .Values.healthService.namespace }}
+  labels:
+    app: health-service
+spec:
+  type: ClusterIP
+  selector:
+    app: health-service
+  ports:
+    - name: http
+      port: {{ .Values.healthService.port }}
+      targetPort: {{ .Values.healthService.port }}

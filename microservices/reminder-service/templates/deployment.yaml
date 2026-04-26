@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reminder-service
+  namespace: {{ .Values.reminderService.namespace }}
+  labels:
+    app: reminder-service
+spec:
+  replicas: {{ .Values.reminderService.replicas }}
+  selector:
+    matchLabels:
+      app: reminder-service
+  template:
+    metadata:
+      labels:
+        app: reminder-service
+    spec:
+      containers:
+        - name: reminder-service
+          image: "{{ .Values.reminderService.image.repository }}:{{ .Values.reminderService.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.reminderService.port }}
+          env:
+            - name: DB_HOST
+              value: {{ .Values.reminderService.env.dbHost }}
+            - name: DB_PORT
+              value: {{ .Values.reminderService.env.dbPort }}
+            - name: DB_USER
+              value: {{ .Values.reminderService.env.dbUser }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.reminderService.secrets.dbPasswordSecret }}
+                  key: {{ .Values.reminderService.secrets.dbPasswordKey }}
+            - name: DB_NAME
+              value: {{ .Values.reminderService.env.dbName }}
+            - name: PORT
+              value: {{ .Values.reminderService.env.port }}
+          resources:
+            requests:
+              cpu: {{ .Values.reminderService.resources.requests.cpu }}
+              memory: {{ .Values.reminderService.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.reminderService.resources.limits.cpu }}
+              memory: {{ .Values.reminderService.resources.limits.memory }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.reminderService.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.reminderService.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3

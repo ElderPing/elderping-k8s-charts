@@ -1,0 +1,20 @@
+uiService:
+  image:
+    repository: arunnsimon/elderpinq-ui-service
+    tag: prod-latest
+  replicas: 2
+  port: 80
+  namespace: elderping-prod
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilization: 70
+    targetMemoryUtilization: null

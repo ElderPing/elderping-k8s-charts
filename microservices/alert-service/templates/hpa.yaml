@@ -1,0 +1,29 @@
+{{- if .Values.alertService.hpa.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: alert-service-hpa
+  namespace: {{ .Values.alertService.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: alert-service
+  minReplicas: {{ .Values.alertService.hpa.minReplicas }}
+  maxReplicas: {{ .Values.alertService.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.alertService.hpa.targetCPUUtilization }}
+{{- if .Values.alertService.hpa.targetMemoryUtilization }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.alertService.hpa.targetMemoryUtilization }}
+{{- end }}
+{{- end }}

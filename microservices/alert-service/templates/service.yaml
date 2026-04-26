@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: alert-service
+  namespace: {{ .Values.alertService.namespace }}
+  labels:
+    app: alert-service
+spec:
+  type: ClusterIP
+  selector:
+    app: alert-service
+  ports:
+    - name: http
+      port: {{ .Values.alertService.port }}
+      targetPort: {{ .Values.alertService.port }}

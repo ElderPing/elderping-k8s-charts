@@ -1,0 +1,29 @@
+healthService:
+  image:
+    repository: arunnsimon/elderpinq-health-service
+    tag: dev-latest
+  replicas: 2
+  port: 3000
+  namespace: elderping-dev
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 5
+    targetCPUUtilization: 80
+    targetMemoryUtilization: 80
+  env:
+    dbHost: health-db
+    dbPort: "5432"
+    dbUser: postgres
+    dbName: health_db
+    port: "3000"
+  secrets:
+    dbPasswordSecret: elderping-secrets
+    dbPasswordKey: db-password

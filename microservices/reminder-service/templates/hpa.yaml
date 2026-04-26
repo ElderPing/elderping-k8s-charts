@@ -1,0 +1,27 @@
+{{- if .Values.reminderService.hpa.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: reminder-service-hpa
+  namespace: {{ .Values.reminderService.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: reminder-service
+  minReplicas: {{ .Values.reminderService.hpa.minReplicas }}
+  maxReplicas: {{ .Values.reminderService.hpa.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.reminderService.hpa.targetCPUUtilization }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.reminderService.hpa.targetMemoryUtilization }}
+{{- end }}

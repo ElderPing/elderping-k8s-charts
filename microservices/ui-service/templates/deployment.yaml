@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-service
+  namespace: {{ .Values.uiService.namespace }}
+  labels:
+    app: ui-service
+spec:
+  replicas: {{ .Values.uiService.replicas }}
+  selector:
+    matchLabels:
+      app: ui-service
+  template:
+    metadata:
+      labels:
+        app: ui-service
+    spec:
+      containers:
+        - name: ui-service
+          image: "{{ .Values.uiService.image.repository }}:{{ .Values.uiService.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.uiService.port }}
+          resources:
+            requests:
+              cpu: {{ .Values.uiService.resources.requests.cpu }}
+              memory: {{ .Values.uiService.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.uiService.resources.limits.cpu }}
+              memory: {{ .Values.uiService.resources.limits.memory }}
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.uiService.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.uiService.port }}
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3

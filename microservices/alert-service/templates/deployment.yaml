@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-service
+  namespace: {{ .Values.alertService.namespace }}
+  labels:
+    app: alert-service
+spec:
+  replicas: {{ .Values.alertService.replicas }}
+  selector:
+    matchLabels:
+      app: alert-service
+  template:
+    metadata:
+      labels:
+        app: alert-service
+    spec:
+      containers:
+        - name: alert-service
+          image: "{{ .Values.alertService.image.repository }}:{{ .Values.alertService.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.alertService.port }}
+          env:
+            - name: DB_HOST
+              value: {{ .Values.alertService.env.dbHost }}
+            - name: DB_PORT
+              value: {{ .Values.alertService.env.dbPort }}
+            - name: DB_USER
+              value: {{ .Values.alertService.env.dbUser }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.alertService.secrets.dbPasswordSecret }}
+                  key: {{ .Values.alertService.secrets.dbPasswordKey }}
+            - name: DB_NAME
+              value: {{ .Values.alertService.env.dbName }}
+            - name: PORT
+              value: {{ .Values.alertService.env.port }}
+          resources:
+            requests:
+              cpu: {{ .Values.alertService.resources.requests.cpu }}
+              memory: {{ .Values.alertService.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.alertService.resources.limits.cpu }}
+              memory: {{ .Values.alertService.resources.limits.memory }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.alertService.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.alertService.port }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3

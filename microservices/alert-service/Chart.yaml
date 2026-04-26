@@ -1,0 +1,5 @@
+apiVersion: v2
+name: alert-service
+description: Alert service deployment for the ElderPing platform
+version: 0.1.0
+type: application
