@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: dev-microservices
+  namespace: argocd
+spec:
+  generators:
+    - git:
+        repoURL: https://github.com/ElderPing/elderping-k8s-charts
+        revision: main
+        directories:
+          - path: microservices/*
+  template:
+    metadata:
+      name: '{{path.basename}}'
+    spec:
+      project: elderping
+      source:
+        repoURL: https://github.com/ElderPing/elderping-k8s-charts
+        targetRevision: main
+        path: '{{path}}'
+        helm:
+          valueFiles:
+            - values-dev.yaml
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: elderping-dev
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true

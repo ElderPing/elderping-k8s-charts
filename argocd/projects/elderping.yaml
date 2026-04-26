@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: elderping
+  namespace: argocd
+  
+spec:
+  description: ElderPing project for infrastructure and microservices
+  # Allow manifests from our GitOps repository
+  sourceRepos:
+    - 'https://github.com/ElderPing/elderping-k8s-charts'
+  
+  # Allow deployments to any namespace within the in-cluster Argo CD
+  destinations:
+    - namespace: '*'
+      server: https://kubernetes.default.svc
+  
+  # Whitelist all cluster resources since infra charts might need CRDs, ClusterRoles, etc.
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
