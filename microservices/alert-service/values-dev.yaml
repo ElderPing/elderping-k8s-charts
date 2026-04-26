@@ -1,7 +1,7 @@
 alertService:
   image:
     repository: arunnsimon/elderpinq-alert-service
-    tag: dev-latest
+    tag: dev-dc807dd8152fce5bcea13a47296b10c10e2ef174
   replicas: 2
   port: 3000
   namespace: elderping-dev
