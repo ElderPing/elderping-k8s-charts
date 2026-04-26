@@ -1,7 +1,7 @@
 uiService:
   image:
     repository: arunnsimon/elderpinq-ui-service
-    tag: prod-latest
+    tag: v1.0.0
   replicas: 2
   port: 80
   namespace: elderping-prod
