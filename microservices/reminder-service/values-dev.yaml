@@ -1,7 +1,7 @@
 reminderService:
   image:
     repository: arunnsimon/elderpinq-reminder-service
-    tag: dev-latest
+    tag: dev-60eae53aa7c3049856140b6c5d29e597f9f2d71d
   replicas: 2
   port: 3000
   namespace: elderping-dev
