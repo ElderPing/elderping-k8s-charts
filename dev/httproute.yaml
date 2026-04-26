@@ -1,0 +1,86 @@
+# =============================================================
+# httproute.yaml — HTTPRoute for dev environment
+# =============================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: elderping-httproute-dev
+  namespace: elderping-dev
+spec:
+  parentRefs:
+    - name: elderping-gateway-dev
+      namespace: elderping-dev
+  rules:
+    # /api/auth/* → auth-service /* (strips /api/auth prefix)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/auth
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
+      backendRefs:
+        - name: auth-service
+          port: 3000
+          weight: 1
+
+    # /api/health/* → health-service /* (strips /api/health prefix)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/health
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
+      backendRefs:
+        - name: health-service
+          port: 3000
+          weight: 1
+
+    # /api/reminder/* → reminder-service /* (strips /api/reminder prefix)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/reminder
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
+      backendRefs:
+        - name: reminder-service
+          port: 3000
+          weight: 1
+
+    # /api/alert/* → alert-service /* (strips /api/alert prefix)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/alert
+      filters:
+        - type: URLRewrite
+          urlRewrite:
+            path:
+              type: ReplacePrefixMatch
+              replacePrefixMatch: /
+      backendRefs:
+        - name: alert-service
+          port: 3000
+          weight: 1
+
+    # Default: all other traffic goes to the React UI
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: ui-service
+          port: 80
+          weight: 1

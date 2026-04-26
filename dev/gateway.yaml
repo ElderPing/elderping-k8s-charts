@@ -1,0 +1,17 @@
+# =============================================================
+# gateway.yaml — KGateway for dev environment
+# =============================================================
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: elderping-gateway-dev
+  namespace: elderping-dev
+spec:
+  gatewayClassName: kgateway
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
