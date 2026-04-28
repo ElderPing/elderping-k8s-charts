@@ -1,7 +1,7 @@
 healthService:
   image:
     repository: arunnsimon/elderpinq-health-service
-    tag: dev-c0b9b0a7750f811860998bb557450eadad920f36
+    tag: dev-ef0eb547d5487323781734c8ac6efe3d4c122a78
   replicas: 2
   port: 3000
   namespace: elderping-dev
